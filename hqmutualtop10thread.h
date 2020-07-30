@@ -10,6 +10,8 @@ struct ExchangeData{
     double      mSell;
     double      mTotal;
     double      mNet;
+    double      mCur;
+    double      mChgPercnt;
 
     bool operator <(const ExchangeData& other) const
     {

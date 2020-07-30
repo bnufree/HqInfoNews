@@ -22,6 +22,7 @@ public:
     void run();
     void    appendCodes(const QStringList& list);
     void    removeCodes(const QStringList& list);
+    static HqRtDataList getHqRtDataList(const QStringList& codelist);
 
 signals:
     void    signalSendHqRtDataList(const HqRtDataList& list);

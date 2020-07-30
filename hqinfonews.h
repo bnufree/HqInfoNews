@@ -19,6 +19,7 @@ private:
     QString getRichTextString(double val);
     void    appendText(const QStringList& list);
     void    adjustPostion();
+    QString getFormatString(const QStringList& list);
 
 private slots:
     void slotRecvKuaiXunList(const KuaiXunList& list);

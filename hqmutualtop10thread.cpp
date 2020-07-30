@@ -6,6 +6,7 @@
 #include <QJsonValue>
 #include <QJsonArray>
 #include <QJsonObject>
+#include "hqrealtimethread.h"
 
 HqMutualTop10Thread::HqMutualTop10Thread(QObject *parent) : QThread(parent)
 {
@@ -31,6 +32,7 @@ void HqMutualTop10Thread::run()
     QMap<QString, ExchangeData> dataMap;
     QDate workDate;
     bool top10_update = false;
+    QStringList codelist;
     while (1) {
         QDateTime now = QDateTime::currentDateTime();
         if(now.date().dayOfWeek() == 7 || now.date().dayOfWeek() == 6) continue;
@@ -44,10 +46,14 @@ void HqMutualTop10Thread::run()
             now.setDate(now.date().addDays(-1));
         }
         top10_update = !top10_update;
+
+
+
         if(top10_update)
         {
             if(now.date() != workDate)
             {
+                codelist.clear();
                 dataMap.clear();
                 QByteArray recv = QHttpGet::getContentOfURL(QString("http://sc.hkex.com.hk/TuniS/www.hkex.com.hk/chi/csm/DailyStat/data_tab_daily_%1c.js?_=%2").arg(now.toString("yyyyMMdd"))
                                                             .arg(QDateTime::currentDateTime().toMSecsSinceEpoch()));
@@ -56,7 +62,6 @@ void HqMutualTop10Thread::run()
                 QString result = QString::fromUtf8(recv).remove(QRegExp("[\\r\\n\\t]"));
                 QRegularExpression start_reg("\\[\\[\"[0-9]{1,2}\"");
                 int start_index = 0;
-
                 while ((start_index = result.indexOf(start_reg, start_index)) >= 0) {
                     int end_index = result.indexOf("]]", start_index);
                     if(end_index == -1) break;
@@ -89,13 +94,22 @@ void HqMutualTop10Thread::run()
                         {
                             dataMap.insert(data.mCode, data);
                         }
+                        codelist.append(data.mCode);
                     }
                 }
-                workDate = now.date();
+                if(dataMap.size() > 0)   workDate = now.date();
             }
+
+            qDebug()<<workDate<<now.date()<<dataMap.size()<<codelist.size();
 
             if(dataMap.size() > 0)
             {
+                HqRtDataList hqlist = HqRealtimeThread::getHqRtDataList(codelist);
+                foreach (HqRtData data, hqlist) {
+                    ExchangeData &chg = dataMap[data.mCode];
+                    chg.mCur = data.mCur;
+                    chg.mChgPercnt = data.mChgPercnt;
+                }
                 QList<ExchangeData> north, south;
                 foreach (ExchangeData data, dataMap) {
                     if(data.mCode.size() == 6)
@@ -106,12 +120,11 @@ void HqMutualTop10Thread::run()
                         south.append(data);
                     }
                 }
-                qSort(north);
-                qSort(south);
+                std::sort(north.begin(), north.end(), std::greater<ExchangeData>());
+                std::sort(south.begin(), south.end());
                 emit signalSendTop10DataList(now.date(), north, south);
             }
         }
-
 
         sleep(60);
 

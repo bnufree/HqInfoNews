@@ -53,10 +53,10 @@ QString HqInfoNews::getRichTextString(double val)
     QString res = "";
     if(val < 0)
     {
-        res = QString("<font style='font-size:20px; font-weight:bold; color:green;'>%1</font>").arg(-val, 0, 'f', 2);
+        res = QString("<font style='font-weight:bold;color:green;'>%1</font>").arg(-val, 0, 'f', 2);
     } else
     {
-        res = QString("<font style='font-size:20px; font-weight:bold; color:red;'>%1</font>").arg(val, 0, 'f', 2);
+        res = QString("<font style='font-weight:bold;color:red;'>%1</font>").arg(val, 0, 'f', 2);
     }
 
     return res;
@@ -64,6 +64,7 @@ QString HqInfoNews::getRichTextString(double val)
 
 void HqInfoNews::slotRecvMutualTop10DataList(const QDate& date, const QList<ExchangeData>& north, const QList<ExchangeData>& south)
 {
+    clear();
     QStringList totalContent;
     totalContent.append(date.toString("yyyy-MM-dd") + " " + QString::fromLocal8Bit("沪深港通交易数据更新"));
     totalContent.append(QString::fromLocal8Bit("北向方面："));
@@ -71,8 +72,8 @@ void HqInfoNews::slotRecvMutualTop10DataList(const QDate& date, const QList<Exch
     QStringList lines;
     foreach (ExchangeData data, north) {
         double net = data.mNet/100000000.0;
-        lines.append(QString("%1(%2)").arg(data.mName).arg(getRichTextString(net)));
-        if(mRtThread) mRtThread->appendCodes(QStringList()<<data.mCode);
+        lines.append(QString("%1(%2,%3,%4)").arg(data.mName).arg(data.mCur, 0, 'f', 2).arg(getRichTextString(data.mChgPercnt)).arg(getRichTextString(net)));
+//        if(mRtThread) mRtThread->appendCodes(QStringList()<<data.mCode);
     }
     totalContent.append(lines.join(" ,"));
 #if 0
@@ -149,7 +150,7 @@ void HqInfoNews::adjustPostion()
 {
     QRect rect = QApplication::desktop()->availableGeometry();
     this->setFixedWidth(rect.width() * 0.2);
-    this->document()->setTextWidth(this->width());
+//    this->document()->setTextWidth(this->width());
 #if 0
     int newheight = this->document()->size().rheight() + 20;
     if (newheight != height())
@@ -173,23 +174,45 @@ void HqInfoNews::slotTimeOut()
     this->hide();
 }
 
+QString HqInfoNews::getFormatString(const QStringList &list)
+{
+    QString result;
+    QRect rect = QApplication::desktop()->availableGeometry();
+    int   col_width = rect.width() * 0.15 / list.size();
+    foreach (QString src, list) {
+        int cal_width = this->fontMetrics().width(src);
+        while (cal_width < col_width) {
+            src.prepend(" ");
+            src.append(" ");
+            cal_width = this->fontMetrics().width(src);
+        }
+        result.append(src);
+    }
+
+    return result;
+
+}
+
 void HqInfoNews::slotRecvHqRtDataList(const HqRtDataList &list)
 {
     if(list.size() == 0) return;
     QStringList totalContent;
     QStringList titles;
+//    titles.append(QString::fromLocal8Bit("  名称  "));
+//    titles.append(QString::fromLocal8Bit("  涨跌幅(%)  "));
+//    titles.append(QString::fromLocal8Bit("  成交金额(亿)  "));
     titles.append(QString::fromLocal8Bit("名称"));
     titles.append(QString::fromLocal8Bit("涨跌幅(%)"));
     titles.append(QString::fromLocal8Bit("成交金额(亿)"));
-    totalContent.append(titles.join("    "));
+    totalContent.append(getFormatString(titles));
     for(int i=0; i<list.size(); i++)
     {
         HqRtData data = list[i];
         titles.clear();
         titles.append(data.mName);
         titles.append(getRichTextString(data.mChgPercnt));
-        titles.append(QString::number(data.mTotal, 'f', 0));
-        totalContent.append(titles.join("    "));
+        titles.append(QString::number(data.mTotal, 'f', 2));
+        totalContent.append(titles.join("               "));
     }
     appendText(totalContent);
 }
