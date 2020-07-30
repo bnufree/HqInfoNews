@@ -10,7 +10,7 @@
 
 HqMutualTop10Thread::HqMutualTop10Thread(QObject *parent) : QThread(parent)
 {
-    qRegisterMetaType<QList<ExchangeData>>("const QList<ExchangeData>&");
+    qRegisterMetaType<QList<ExchangeData> >("const QList<ExchangeData>&");
 }
 
 void HqMutualTop10Thread::getRtNorthMoneyInfo()

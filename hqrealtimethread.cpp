@@ -1,5 +1,6 @@
 ﻿#include "hqrealtimethread.h"
 #include "qhttpget.h"
+#include <QTextCodec>
 
 HqRealtimeThread::HqRealtimeThread(QObject *parent) : QThread(parent)
 {
@@ -28,7 +29,10 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
             url.append(QString("rt_hk%1,").arg(code));
         }
     }
-    QString result = QString::fromLocal8Bit(QHttpGet::getContentOfURL(url));
+    QByteArray bytes = QHttpGet::getContentOfURL(url);
+//    QTextCodec *codes = QTextCodec::codecForName("GBK");
+//    QTextCodec *utf8 = QTextCodec::codecForName("UTF8");
+    QString result = QString::fromLocal8Bit(bytes);
     QStringList resultList = result.split("\n", QString::SkipEmptyParts);
     HqRtDataList hq_list;
     foreach (QString line, resultList) {

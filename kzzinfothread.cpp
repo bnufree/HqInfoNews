@@ -7,7 +7,7 @@
 
 KZZInfoThread::KZZInfoThread(QObject *parent) : QThread(parent)
 {
-    qRegisterMetaType<QList<KZZ>>("const QList<KZZ>&");
+    qRegisterMetaType<QList<KZZ> >("const QList<KZZ>&");
 }
 
 void KZZInfoThread::run()

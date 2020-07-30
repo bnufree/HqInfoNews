@@ -4,6 +4,7 @@
 #include <QEventLoop>
 #include <QNetworkCookie>
 #include <QNetworkCookieJar>
+#include <QTextCodec>
 
 QHttpGet::QHttpGet(const QString& url, bool sequential, QObject *parent) :
     QThread(parent),mMgr(0), mUrl(url), mReply(0), mIsSequential(sequential), mUpdateTimer(0)
@@ -128,7 +129,20 @@ QByteArray QHttpGet::getContentOfURL(const QString &url)
 //    qDebug()<<reply->isFinished()<<reply->errorString();
     if(reply->error() == QNetworkReply::NoError && reply->isFinished())
     {
+        QString content_type = reply->header(QNetworkRequest::ContentTypeHeader).toString();
+        int index = content_type.indexOf("charset=");
+        QTextCodec *htmlCodes = 0;
+        if(index >= 0)
+        {
+            int last_index = content_type.indexOf(QRegExp("[;\"]"), index);
+            QString name = content_type.mid(index+8);
+            htmlCodes = QTextCodec::codecForName(name.toLatin1());
+        }
         recv = reply->readAll();
+        if(htmlCodes && htmlCodes->name() != QTextCodec::codecForLocale()->name())
+        {
+            recv = QTextCodec::codecForLocale()->fromUnicode(htmlCodes->toUnicode(recv));
+        }
     }
 
     reply->abort();

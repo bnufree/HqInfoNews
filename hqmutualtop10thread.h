@@ -34,7 +34,7 @@ class HqMutualTop10Thread : public QThread
 {
     Q_OBJECT
 public:
-    explicit HqMutualTop10Thread(QObject *parent = nullptr);
+    explicit HqMutualTop10Thread(QObject *parent = NULL);
 
     void run();
 private:

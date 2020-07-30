@@ -18,7 +18,7 @@ class KZZInfoThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit KZZInfoThread(QObject *parent = nullptr);
+    explicit KZZInfoThread(QObject *parent = NULL);
 
     void run();
 

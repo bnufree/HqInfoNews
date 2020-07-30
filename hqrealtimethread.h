@@ -18,7 +18,7 @@ class HqRealtimeThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit HqRealtimeThread(QObject *parent = nullptr);
+    explicit HqRealtimeThread(QObject *parent = NULL);
     void run();
     void    appendCodes(const QStringList& list);
     void    removeCodes(const QStringList& list);
