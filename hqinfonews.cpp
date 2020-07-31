@@ -39,9 +39,16 @@ HqInfoNews::HqInfoNews(QWidget *parent)
     top10->start();
 
     mRtThread = new HqRealtimeThread(this);
-    mRtThread->appendCodes(QStringList()<<"300059"<<"00700"<<"002475"<<"s_sh000001"<<"rt_hkHSI"<<"sz399006");
+    mRtThread->appendCodes(QStringList()<<"300059"<<"159949"<<"002475"<<"159995"<<"002351"<<"s_sh000001"<<"rt_hkHSI"<<"sz399006");
     connect(mRtThread, SIGNAL(signalSendHqRtDataList(HqRtDataList)), this, SLOT(slotRecvHqRtDataList(HqRtDataList)));
     mRtThread->start();
+
+    QIcon appIcon = QIcon("://img/12.jpg");
+    this->setWindowIcon(appIcon);
+    QSystemTrayIcon *mSysTrayIcon = new QSystemTrayIcon(this);
+    mSysTrayIcon->setIcon(appIcon);
+    mSysTrayIcon->setVisible(true);
+    connect(mSysTrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(slotSystemTrayOperation(QSystemTrayIcon::ActivationReason)));
 }
 
 HqInfoNews::~HqInfoNews()
@@ -221,4 +228,38 @@ void HqInfoNews::slotRecvHqRtDataList(const HqRtDataList &list)
         totalContent.append(titles.join("               "));
     }
     appendText(totalContent);
+}
+
+void HqInfoNews::slotSystemTrayOperation(QSystemTrayIcon::ActivationReason val)
+{
+    switch (val) {
+    case QSystemTrayIcon::DoubleClick:
+    {
+        //        setVisible(!isVisible());
+    }
+        break;
+    case QSystemTrayIcon::Context:
+    {
+        QMenu *popMenu = new QMenu(this);
+        QList<QAction*> actlist;
+        QStringList poplist;
+        poplist<<QStringLiteral("显示")<<QStringLiteral("退出");
+        int index = -1;
+        foreach (QString name, poplist) {
+            index++;
+            QAction *act = new QAction(this);
+            act->setText(name);
+            act->setData(index);
+//            connect(act, &QAction::triggered, this, &zchxMainWindow::slotSystemTrayMenuClicked);
+            actlist.append(act);
+        }
+
+        popMenu->addActions(actlist);
+        popMenu->popup(QCursor::pos());
+    }
+        break;
+    default:
+        break;
+    }
+
 }

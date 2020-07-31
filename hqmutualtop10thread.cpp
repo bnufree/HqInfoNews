@@ -31,7 +31,7 @@ void HqMutualTop10Thread::run()
 {
     QMap<QString, ExchangeData> dataMap;
     QDate workDate;
-    bool top10_update = false;
+    int top10_update = 0;
     QStringList codelist;
     while (1) {
         QDateTime now = QDateTime::currentDateTime();
@@ -45,12 +45,11 @@ void HqMutualTop10Thread::run()
         {
             now.setDate(now.date().addDays(-1));
         }
-        top10_update = !top10_update;
+        top10_update++;
 
-
-
-        if(top10_update)
+        if(top10_update % 3 == 0)
         {
+            top10_update = 0;
             if(now.date() != workDate)
             {
                 codelist.clear();
@@ -100,7 +99,7 @@ void HqMutualTop10Thread::run()
                 if(dataMap.size() > 0)   workDate = now.date();
             }
 
-            qDebug()<<workDate<<now.date()<<dataMap.size()<<codelist.size();
+//            qDebug()<<workDate<<now.date()<<dataMap.size()<<codelist.size();
 
             if(dataMap.size() > 0)
             {

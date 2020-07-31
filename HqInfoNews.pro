@@ -40,3 +40,6 @@ HEADERS += \
     kzzinfothread.h \
     hqmutualtop10thread.h \
     hqrealtimethread.h
+
+RESOURCES += \
+    images.qrc

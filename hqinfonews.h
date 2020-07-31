@@ -6,6 +6,7 @@
 #include "kzzinfothread.h"
 #include "hqmutualtop10thread.h"
 #include "hqrealtimethread.h"
+#include <QSystemTrayIcon>
 
 class HqInfoNews : public QTextBrowser
 {
@@ -28,6 +29,7 @@ private slots:
     void slotTimeOut();
     void slotRecvNorthMoney(double total, double sh, double sz);
     void slotRecvHqRtDataList(const HqRtDataList& list);
+    void slotSystemTrayOperation(QSystemTrayIcon::ActivationReason);
 
 private:
     QTimer*         mDisplaytimer;
