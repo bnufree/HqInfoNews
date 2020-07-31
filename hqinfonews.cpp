@@ -7,6 +7,7 @@
 #include <QDate>
 #include "hqrealtimethread.h"
 
+#pragma execution_character_set("utf-8")
 
 HqInfoNews::HqInfoNews(QWidget *parent)
     : QTextBrowser(parent)
@@ -53,10 +54,10 @@ QString HqInfoNews::getRichTextString(double val)
     QString res = "";
     if(val < 0)
     {
-        res = QString("<font style='font-weight:bold;color:green;'>%1</font>").arg(-val, 0, 'f', 2);
+        res = QString("<font style='font-weight:bold;color:green;font-style:oblique;'>  %1  </font>").arg(-val, 0, 'f', 2);
     } else
     {
-        res = QString("<font style='font-weight:bold;color:red;'>%1</font>").arg(val, 0, 'f', 2);
+        res = QString("<font style='font-weight:bold;color:red;font-style:oblique;'>  %1  </font>").arg(val, 0, 'f', 2);
     }
 
     return res;
@@ -66,8 +67,8 @@ void HqInfoNews::slotRecvMutualTop10DataList(const QDate& date, const QList<Exch
 {
     clear();
     QStringList totalContent;
-    totalContent.append(date.toString("yyyy-MM-dd") + " " + QString::fromLocal8Bit("沪深港通交易数据更新"));
-    totalContent.append(QString::fromLocal8Bit("北向方面："));
+    totalContent.append(date.toString("yyyy-MM-dd") + " " + QString::fromUtf8("沪深港通交易数据更新"));
+    totalContent.append(QString::fromUtf8("北向方面："));
 
     QStringList lines;
     foreach (ExchangeData data, north) {
@@ -76,24 +77,24 @@ void HqInfoNews::slotRecvMutualTop10DataList(const QDate& date, const QList<Exch
 //        if(mRtThread) mRtThread->appendCodes(QStringList()<<data.mCode);
     }
     totalContent.append(lines.join(" ,"));
-#if 0
+#if 1
     lines.clear();
-    totalContent.append(QString::fromLocal8Bit("南向方面："));
+    totalContent.append(QString::fromUtf8("南向方面："));
     foreach (ExchangeData data, south) {
         double net = data.mNet/100000000.0;
-        lines.append(QString("%1(%2)").arg(data.mName).arg(getRichTextString(net)));
+        lines.append(QString("%1(%2,%3,%4)").arg(data.mName).arg(data.mCur, 0, 'f', 2).arg(getRichTextString(data.mChgPercnt)).arg(getRichTextString(net)));
     }
     totalContent.append(lines.join(" ,"));
 #endif
-    appendText(totalContent);
+    appendText(totalContent, 20);
 }
 
 
 void HqInfoNews::slotRecvNorthMoney(double total, double sh, double sz)
 {
     QStringList totalContent;
-    totalContent.append(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + " " + QString::fromLocal8Bit("沪深港通实时资金流更新"));
-    totalContent.append(QString::fromLocal8Bit("北向方面：%1亿， 其中上海%2亿，深圳%3亿").arg(getRichTextString(total / 10000.0)).arg(getRichTextString(sh/10000.0)).arg(getRichTextString(sz/10000.0)));
+    totalContent.append(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + " " + QString::fromUtf8("沪深港通实时资金流更新"));
+    totalContent.append(QString::fromUtf8("北向方面：%1亿， 其中上海%2亿，深圳%3亿").arg(getRichTextString(total / 10000.0)).arg(getRichTextString(sh/10000.0)).arg(getRichTextString(sz/10000.0)));
     appendText(totalContent);
 }
 
@@ -116,11 +117,11 @@ void HqInfoNews::slotRecvKZZDataList(const QList<KZZ>& list)
     if(list.size() == 0) return;
     QStringList totalContent;
     QStringList titles;
-    titles.append(QString::fromLocal8Bit("名称"));
-    titles.append(QString::fromLocal8Bit("申购日期"));
-    titles.append(QString::fromLocal8Bit("股权登记"));
-    titles.append(QString::fromLocal8Bit("确保配售"));
-    titles.append(QString::fromLocal8Bit("转股价值"));
+    titles.append(QString::fromUtf8("名称"));
+    titles.append(QString::fromUtf8("申购日期"));
+    titles.append(QString::fromUtf8("股权登记"));
+    titles.append(QString::fromUtf8("确保配售"));
+    titles.append(QString::fromUtf8("转股价值"));
     totalContent.append(titles.join("  "));
     for(int i=0; i<list.size(); i++)
     {
@@ -136,14 +137,22 @@ void HqInfoNews::slotRecvKZZDataList(const QList<KZZ>& list)
     appendText(totalContent);
 }
 
-void HqInfoNews::appendText(const QStringList &list)
+void HqInfoNews::appendText(const QStringList &list, int time_out)
 {
     foreach (QString text, list) {
         this->append(text);
     }
     adjustPostion();
     this->show();
-    if(mDisplaytimer) mDisplaytimer->start();
+    if(mDisplaytimer)
+    {
+        int cur_timeout = time_out * 1000;
+        if(mDisplaytimer->isActive())
+        {
+            if(cur_timeout < mDisplaytimer->interval()) cur_timeout = mDisplaytimer->interval();
+        }
+        mDisplaytimer->start(cur_timeout);
+    }
 }
 
 void HqInfoNews::adjustPostion()
@@ -198,12 +207,9 @@ void HqInfoNews::slotRecvHqRtDataList(const HqRtDataList &list)
     if(list.size() == 0) return;
     QStringList totalContent;
     QStringList titles;
-//    titles.append(QString::fromLocal8Bit("  名称  "));
-//    titles.append(QString::fromLocal8Bit("  涨跌幅(%)  "));
-//    titles.append(QString::fromLocal8Bit("  成交金额(亿)  "));
-    titles.append(QString::fromLocal8Bit("名称"));
-    titles.append(QString::fromLocal8Bit("涨跌幅(%)"));
-    titles.append(QString::fromLocal8Bit("成交金额(亿)"));
+    titles.append(QString::fromUtf8("名称"));
+    titles.append(QString::fromUtf8("涨跌幅(%)"));
+    titles.append(QString::fromUtf8("成交金额(亿)"));
     totalContent.append(getFormatString(titles));
     for(int i=0; i<list.size(); i++)
     {

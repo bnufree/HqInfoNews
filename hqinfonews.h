@@ -17,7 +17,7 @@ public:
 
 private:
     QString getRichTextString(double val);
-    void    appendText(const QStringList& list);
+    void    appendText(const QStringList& list, int time_out = 10);
     void    adjustPostion();
     QString getFormatString(const QStringList& list);
 

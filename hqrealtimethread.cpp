@@ -32,7 +32,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
     QByteArray bytes = QHttpGet::getContentOfURL(url);
 //    QTextCodec *codes = QTextCodec::codecForName("GBK");
 //    QTextCodec *utf8 = QTextCodec::codecForName("UTF8");
-    QString result = QString::fromLocal8Bit(bytes);
+    QString result = QString::fromUtf8(bytes);
     QStringList resultList = result.split("\n", QString::SkipEmptyParts);
     HqRtDataList hq_list;
     foreach (QString line, resultList) {
@@ -110,7 +110,7 @@ void HqRealtimeThread::run()
                 url.append(QString("rt_hk%1,").arg(code));
             }
         }
-        QString result = QString::fromLocal8Bit(QHttpGet::getContentOfURL(url));
+        QString result = QString::fromUtf8(QHttpGet::getContentOfURL(url));
         QStringList resultList = result.split("\n", QString::SkipEmptyParts);
         HqRtDataList hq_list;
         foreach (QString line, resultList) {
