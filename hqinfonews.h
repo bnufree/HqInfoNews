@@ -8,6 +8,7 @@
 #include "hqrealtimethread.h"
 #include <QSystemTrayIcon>
 
+class SettingsCfg;
 class HqInfoNews : public QTextBrowser
 {
     Q_OBJECT
@@ -21,6 +22,7 @@ private:
     void    appendText(const QStringList& list, int time_out = 10);
     void    adjustPostion();
     QString getFormatString(const QStringList& list);
+    void    initCfg();
 
 private slots:
     void slotRecvKuaiXunList(const KuaiXunList& list);
@@ -34,6 +36,8 @@ private slots:
 private:
     QTimer*         mDisplaytimer;
     HqRealtimeThread    *mRtThread;
+    HqRealtimeThread    *mIndexThread;
+    SettingsCfg*        mCfg;
 };
 
 #endif // HQINFONEWS_H

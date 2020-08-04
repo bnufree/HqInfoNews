@@ -37,13 +37,19 @@ void HqMutualTop10Thread::run()
         QDateTime now = QDateTime::currentDateTime();
         if(now.date().dayOfWeek() == 7 || now.date().dayOfWeek() == 6) continue;
         int hour =  now.time().hour();
-        if(hour > 15 && hour < 17) continue;
+        if(hour >= 15 && hour < 17) continue;
 
         getRtNorthMoneyInfo();
 
         if(hour < 17)
         {
-            now.setDate(now.date().addDays(-1));
+            if(now.date().dayOfWeek() == 1)
+            {
+                now.setDate(now.date().addDays(-3));
+            } else
+            {
+                now.setDate(now.date().addDays(-1));
+            }
         }
         top10_update++;
 

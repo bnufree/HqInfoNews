@@ -11,7 +11,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
 {
     QString url = "http://hq.sinajs.cn/list=";
     foreach (QString code, codelist) {
-        if(code.left(1) == "s" || code.left(1) == "r")
+        if(code.left(1) == "s" || code.left(2) == "rt"  || code.left(2) == "hf")
         {
             url.append(QString("%1,").arg(code));
             continue;
@@ -77,6 +77,17 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
             if(line_list.size() > 4) data.mCur = line_list[4].toDouble();
             if(last_close > 0.0) data.mChgPercnt = (data.mCur - last_close) / last_close * 100;
             if(line_list.size() > 10) data.mTotal = line_list[10].toDouble() / 100000000.0;
+            hq_list.append(data);
+        }else if(code.left(2) == "hf")
+        {
+            HqRtData data;
+            data.mCode = code.mid(3);
+            if(line_list.size() > 1) data.mCur = line_list[1].toDouble();
+            double last_close = 0.0;
+            if(line_list.size() > 7) last_close = line_list[7].toDouble();
+            if(line_list.size() > 13) data.mName = line_list[13];
+            if(last_close > 0.0) data.mChgPercnt = (data.mCur - last_close) / last_close * 100;
+            data.mTotal = data.mCur;
             hq_list.append(data);
         }
     }

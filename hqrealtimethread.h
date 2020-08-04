@@ -20,13 +20,14 @@ class HqRealtimeThread : public QThread
 public:
     explicit HqRealtimeThread(QObject *parent = NULL);
     void run();
-    void    appendCodes(const QStringList& list);
-    void    removeCodes(const QStringList& list);
+    QStringList getCodes() const {return mCodesList;}
     static HqRtDataList getHqRtDataList(const QStringList& codelist);
 
 signals:
     void    signalSendHqRtDataList(const HqRtDataList& list);
-public slots:
+public slots:    
+    void    appendCodes(const QStringList& list);
+    void    removeCodes(const QStringList& list);
 private:
     QStringList     mCodesList;
 };

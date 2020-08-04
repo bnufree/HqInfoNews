@@ -6,6 +6,8 @@
 
 QT       += core gui network
 
+CONFIG += c++11
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HqInfoNews
@@ -31,7 +33,9 @@ SOURCES += \
     qhttpget.cpp \
     kzzinfothread.cpp \
     hqmutualtop10thread.cpp \
-    hqrealtimethread.cpp
+    hqrealtimethread.cpp \
+    settingscfg.cpp \
+    profiles.cpp
 
 HEADERS += \
         hqinfonews.h \
@@ -39,7 +43,12 @@ HEADERS += \
     qhttpget.h \
     kzzinfothread.h \
     hqmutualtop10thread.h \
-    hqrealtimethread.h
+    hqrealtimethread.h \
+    settingscfg.h \
+    profiles.h
 
 RESOURCES += \
     images.qrc
+
+FORMS += \
+    settingscfg.ui
