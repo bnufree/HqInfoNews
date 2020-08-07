@@ -111,7 +111,7 @@ void HqMutualTop10Thread::run()
             {
                 HqRtDataList hqlist = HqRealtimeThread::getHqRtDataList(codelist);
                 foreach (HqRtData data, hqlist) {
-                    ExchangeData &chg = dataMap[data.mCode];
+                    ExchangeData &chg = dataMap[data.mCode.mid(data.mCode.indexOf(QRegExp("\\d")))];
                     chg.mCur = data.mCur;
                     chg.mChgPercnt = data.mChgPercnt;
                 }

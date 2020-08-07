@@ -11,10 +11,10 @@
 
 InfoRollingWidget::InfoRollingWidget(QWidget *parent) : QWidget(parent)
 {
-    mLastIndex = -1;
+    mLastIndex = 0;
     mShareThread = 0;
     mIndexThread = 0;
-    this->setWindowFlags(windowFlags() |Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::SubWindow);
+    this->setWindowFlags(windowFlags() |Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     QTimer *timer = new QTimer(this);
     timer->setInterval(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
@@ -110,12 +110,12 @@ void InfoRollingWidget::slotTimeOut()
 {
     if(mRollDataMap.size() == 0) return;
     HqRtDataList list = mRollDataMap.values();
-    int start = (++mLastIndex) % list.size();
+    int size = list.size();
     foreach (QLabel * l, mDisplayLabelList) {
-        l->setText(getHtmlRichText(HqRtDataList()<<list[start]));
-        start = (++start) % list.size();
+        l->setText(getHtmlRichText(HqRtDataList()<<list[mLastIndex % size]));
+        mLastIndex = (++mLastIndex) % list.size();
     }
-    mLastIndex = start;
+    raise();
 }
 
 void InfoRollingWidget::slotAppendIndex(const QStringList &codes)
