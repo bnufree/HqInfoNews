@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="focustab_">
       <attribute name="title">
@@ -172,13 +172,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="hq_zxg">
-         <property name="text">
-          <string>自选股行情</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="2">
         <widget class="QCheckBox" name="hq_index">
          <property name="text">
@@ -190,6 +183,13 @@
         <widget class="QCheckBox" name="northbound_rt">
          <property name="text">
           <string>北向实时资金</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="hq_zxg">
+         <property name="text">
+          <string>自选股行情</string>
          </property>
         </widget>
        </item>

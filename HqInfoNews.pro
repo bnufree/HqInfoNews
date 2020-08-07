@@ -35,7 +35,8 @@ SOURCES += \
     hqmutualtop10thread.cpp \
     hqrealtimethread.cpp \
     settingscfg.cpp \
-    profiles.cpp
+    profiles.cpp \
+    inforollingwidget.cpp
 
 HEADERS += \
         hqinfonews.h \
@@ -45,7 +46,8 @@ HEADERS += \
     hqmutualtop10thread.h \
     hqrealtimethread.h \
     settingscfg.h \
-    profiles.h
+    profiles.h \
+    inforollingwidget.h
 
 RESOURCES += \
     images.qrc

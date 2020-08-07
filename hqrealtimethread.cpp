@@ -43,7 +43,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         if(code.left(2) == "s_")
         {
             HqRtData data;
-            data.mCode = code.right(6);
+            data.mCode = code.mid(2);
             if(line_list.size() > 1) data.mName = line_list[1];
             if(line_list.size() > 2) data.mCur = line_list[2].toDouble();
             if(line_list.size() > 4) data.mChgPercnt = line_list[4].toDouble();
@@ -53,7 +53,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         } else if(code.left(2) == "rt")
         {
             HqRtData data;
-            data.mCode = code.mid(5);
+            data.mCode = code.mid(3);
             if(line_list.size() > 2) data.mName = line_list[2];
             if(line_list.size() > 7) data.mCur = line_list[7].toDouble();
             if(line_list.size() > 9) data.mChgPercnt = line_list[9].toDouble();
@@ -70,7 +70,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         } else if(code.left(2) == "sh" || code.left(2) == "sz")
         {
             HqRtData data;
-            data.mCode = code.right(6);
+            data.mCode = code;
             if(line_list.size() > 1) data.mName = line_list[1];
             double last_close = 0.0;
             if(line_list.size() > 3) last_close = line_list[3].toDouble();
@@ -81,7 +81,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         }else if(code.left(2) == "hf")
         {
             HqRtData data;
-            data.mCode = code.mid(3);
+            data.mCode = code;
             if(line_list.size() > 1) data.mCur = line_list[1].toDouble();
             double last_close = 0.0;
             if(line_list.size() > 7) last_close = line_list[7].toDouble();
@@ -173,12 +173,13 @@ void HqRealtimeThread::run()
 
         emit signalSendHqRtDataList(hq_list);
 
-        sleep(60);
+        sleep(3);
     }
 }
 
 void HqRealtimeThread::appendCodes(const QStringList &list)
 {
+    qDebug()<<"codes:"<<list<<this;
     foreach (QString code, list) {
         if(!mCodesList.contains(code)) mCodesList.append(code);
     }

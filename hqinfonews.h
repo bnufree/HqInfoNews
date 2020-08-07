@@ -5,17 +5,20 @@
 #include "hqkuaixun.h"
 #include "kzzinfothread.h"
 #include "hqmutualtop10thread.h"
-#include "hqrealtimethread.h"
 #include <QSystemTrayIcon>
 
 class SettingsCfg;
+class InfoRollingWidget;
+
 class HqInfoNews : public QTextBrowser
 {
     Q_OBJECT
 
 public:
-    HqInfoNews(QWidget *parent = 0);
+    HqInfoNews(InfoRollingWidget* roll, QWidget *parent = 0);
     ~HqInfoNews();
+    void  setInfoRollingWidget(InfoRollingWidget* w) {mRollWidget = w;}
+
 
 private:
     QString getRichTextString(double val);
@@ -29,15 +32,13 @@ private slots:
     void slotRecvKZZDataList(const QList<KZZ>& list);
     void slotRecvMutualTop10DataList(const QDate& date, const QList<ExchangeData>& north, const QList<ExchangeData>& south);
     void slotTimeOut();
-    void slotRecvNorthMoney(double total, double sh, double sz);
-    void slotRecvHqRtDataList(const HqRtDataList& list);
+    void slotRecvNorthMoney(double total, double sh, double sz);    
     void slotSystemTrayOperation(QSystemTrayIcon::ActivationReason);
 
 private:
     QTimer*         mDisplaytimer;
-    HqRealtimeThread    *mRtThread;
-    HqRealtimeThread    *mIndexThread;
     SettingsCfg*        mCfg;
+    InfoRollingWidget   *mRollWidget;
 };
 
 #endif // HQINFONEWS_H
