@@ -1,6 +1,7 @@
 ﻿#include "hqrealtimethread.h"
 #include "qhttpget.h"
 #include <QTextCodec>
+#include "profiles.h"
 
 HqRealtimeThread::HqRealtimeThread(QObject *parent) : QThread(parent)
 {
@@ -43,7 +44,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         if(code.left(2) == "s_")
         {
             HqRtData data;
-            data.mCode = code.mid(2);
+            data.mCode = PROFILES_INSTANCE->formatCode(code);
             if(line_list.size() > 1) data.mName = line_list[1];
             if(line_list.size() > 2) data.mCur = line_list[2].toDouble();
             if(line_list.size() > 4) data.mChgPercnt = line_list[4].toDouble();
@@ -53,7 +54,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         } else if(code.left(2) == "rt")
         {
             HqRtData data;
-            data.mCode = code.mid(3);
+            data.mCode = code;
             if(line_list.size() > 2) data.mName = line_list[2];
             if(line_list.size() > 7) data.mCur = line_list[7].toDouble();
             if(line_list.size() > 9) data.mChgPercnt = line_list[9].toDouble();
@@ -179,15 +180,14 @@ void HqRealtimeThread::run()
 
 void HqRealtimeThread::appendCodes(const QStringList &list)
 {
-    qDebug()<<"codes:"<<list<<this;
     foreach (QString code, list) {
-        if(!mCodesList.contains(code)) mCodesList.append(code);
+        if(!mCodesList.contains(code)) mCodesList.append(PROFILES_INSTANCE->formatCode(code));
     }
 }
 
 void HqRealtimeThread::removeCodes(const QStringList &list)
 {
     foreach (QString code, list) {
-        mCodesList.removeOne(code);
+        mCodesList.removeOne(PROFILES_INSTANCE->formatCode(code));
     }
 }

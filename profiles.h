@@ -17,6 +17,9 @@ public:
     ~Profiles();
     static Profiles *instance();
 
+    QString formatCode(const QString& code);
+    bool    isNumber(const QString& code);
+
 public slots:
     void setValue( const QString & prefix, const QString & key, const QVariant & value );
     void setDefault( const QString & prefix, const QString & key, const QVariant & value );

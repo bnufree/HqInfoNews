@@ -156,6 +156,38 @@ void Profiles::removeGroup(const QString &prefix)
     removeKeys(prefix, subkeys(prefix));
 }
 
+bool Profiles::isNumber(const QString &code)
+{
+    QRegExp reg("^[-\\+]?[\\d]*$");
+    return reg.exactMatch(code);
+}
+
+QString Profiles::formatCode(const QString &wkcode)
+{
+    QString code = wkcode;
+    if(code.contains("of")) code.remove("of");
+    if(isNumber(code))
+    {
+        if(code.size() == 5) return "rt_hk" + code;
+        if(code.size() == 6)
+        {
+            if(code.left(1).toInt() >= 5) return "sh" + code;
+            return "sz" + code;
+        }
+    }
+    if(code.startsWith("hk")) return "rt_" + code;
+    if(code.startsWith("rt_") || code.startsWith("sh") || code.startsWith("sz") || code.startsWith("hf")) return code;
+    if(code.startsWith("s_"))
+    {
+        int index = code.indexOf("sh");
+        if(index < 0) index = code.indexOf("sz");
+        if(index >= 0) return code.mid(index);
+    }
+    if(code.compare("HSI") == 0) return "rt_hk" + code;
+
+    return code;
+}
+
 
 
 }

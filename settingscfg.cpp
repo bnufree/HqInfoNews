@@ -35,15 +35,15 @@ SettingsCfg::SettingsCfg(QWidget *parent) :
     this->setGeometry(src);
 
     //
-    ui->sh_sz_Index->setProperty(CODE_PROPERTY, "s_sh000001");
-    ui->sh_hs300_Index->setProperty(CODE_PROPERTY, "s_sh000300");
-    ui->sh_kc50_Index->setProperty(CODE_PROPERTY, "s_sh000688");
-    ui->sh_sz50_Index->setProperty(CODE_PROPERTY, "s_sh000016");
+    ui->sh_sz_Index->setProperty(CODE_PROPERTY, "sh000001");
+    ui->sh_hs300_Index->setProperty(CODE_PROPERTY, "sh000300");
+    ui->sh_kc50_Index->setProperty(CODE_PROPERTY, "sh000688");
+    ui->sh_sz50_Index->setProperty(CODE_PROPERTY, "sh000016");
 
-    ui->sz_sz_Index->setProperty(CODE_PROPERTY, "s_sz399001");
-    ui->sz_cyb_index->setProperty(CODE_PROPERTY, "s_sz399006");
-    ui->sz_cyb50_index->setProperty(CODE_PROPERTY, "s_sz399673");
-    ui->sz_zxb_Index->setProperty(CODE_PROPERTY, "s_sz399005");
+    ui->sz_sz_Index->setProperty(CODE_PROPERTY, "sz399001");
+    ui->sz_cyb_index->setProperty(CODE_PROPERTY, "sz399006");
+    ui->sz_cyb50_index->setProperty(CODE_PROPERTY, "sz399673");
+    ui->sz_zxb_Index->setProperty(CODE_PROPERTY, "sz399005");
 
     ui->us_gold->setProperty(CODE_PROPERTY, "hf_GC");
     ui->us_silver->setProperty(CODE_PROPERTY, "hf_SI");
@@ -67,8 +67,8 @@ SettingsCfg::SettingsCfg(QWidget *parent) :
     connect(ui->ft_A50, SIGNAL(clicked(bool)), this, SLOT(slotIndexCodesEnabled(bool)));
     connect(ui->hk_hs_Index, SIGNAL(clicked(bool)), this, SLOT(slotIndexCodesEnabled(bool)));
 
-    PROFILES_INSTANCE->setDefault("Hq", "Index", QString("s_sh000001,s_sh000688,s_sz399001,s_sz399006,rt_hkHSI,hf_GC,hf_CHA50CFD").split(","));
-    PROFILES_INSTANCE->setDefault("Hq", "Zxg", QString("300059,002351,000069,000021").split(","));
+//    PROFILES_INSTANCE->setDefault("Hq", "Index", QString("s_sh000001,s_sh000688,s_sz399001,s_sz399006,rt_hkHSI,hf_GC,hf_CHA50CFD").split(","));
+//    PROFILES_INSTANCE->setDefault("Hq", "Zxg", QString("300059,002351,000069,000021").split(","));
 
     mIndexList = PROFILES_INSTANCE->value("Hq", "Index").toStringList();
     foreach (QString code, mIndexList) {
@@ -91,11 +91,12 @@ SettingsCfg::SettingsCfg(QWidget *parent) :
         int row = item->row();
         int col = item->column();
         item = ui->tableWidget->takeItem(row, col);
-        QString wkCode = item->data(Qt::UserRole).toString();
+        QString wkCode = PROFILES_INSTANCE->formatCode(item->data(Qt::UserRole).toString());
         if(mZxgList.contains(wkCode))
         {
             mZxgList.removeOne(wkCode);
             emit signalRemoveShareCode(QStringList()<<wkCode);
+            PROFILES_INSTANCE->setValue("Hq", "Zxg", mZxgList);
         }
         //将后面的单元格移动
         delete item;
@@ -202,7 +203,7 @@ void SettingsCfg::on_lineEdit_textChanged(const QString &arg1)
         mSuggestWidget->hide();
         return;
     }
-    QString url = QString("http://suggest3.sinajs.cn/suggest/type=11,31&key=%1&name=").arg(arg1);
+    QString url = QString("http://suggest3.sinajs.cn/suggest/type=11,31,22&key=%1&name=").arg(arg1);
     QString result = QString::fromUtf8(QHttpGet::getContentOfURL(url));
     result = result.mid(result.indexOf("\""));
     if(result.size() == 0) return;
@@ -215,14 +216,7 @@ void SettingsCfg::on_lineEdit_textChanged(const QString &arg1)
 //        qDebug()<<line;
         SuggestData data;
         data.mCode = data_list[3];
-        if(data.mCode.size() == 5) 
-        {
-            data.mCode.prepend("rt_hk");
-        } else if(data.mCode.size() == 6)
-        {
-            data.mCode.prepend("s_");
-        }
-        
+        data.mCode = PROFILES_INSTANCE->formatCode(data.mCode);
         data.mName = data_list[4];
         resultList.append(data);
 //        qDebug()<<data.mCode<<data.mName;
@@ -261,7 +255,7 @@ void SettingsCfg::on_lineEdit_textChanged(const QString &arg1)
 void SettingsCfg::slotItemDoubleClicked(QListWidgetItem *item)
 {
     if(!item) return;
-    QString code = item->data(Qt::UserRole).toString();
+    QString code = PROFILES_INSTANCE->formatCode(item->data(Qt::UserRole).toString());
     emit signalAddShareCode(QStringList()<<code);
     slotInsertCode(item->data(Qt::UserRole+1).toString(), code);
     mSuggestWidget->hide();
@@ -270,8 +264,8 @@ void SettingsCfg::slotItemDoubleClicked(QListWidgetItem *item)
 void SettingsCfg::slotInsertCode(const QString &name, const QString &code)
 {
     QString wkCode = code;
-    int index = wkCode.indexOf(QRegExp("[0-9]"));
-    if(index != 0 ) wkCode = wkCode.mid(index);
+//    int index = wkCode.indexOf(QRegExp("[0-9]"));
+//    if(index != 0 ) wkCode = wkCode.mid(index);
     if(mCol == 0 || mCol == 5)
     {
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());

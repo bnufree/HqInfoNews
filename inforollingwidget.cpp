@@ -5,6 +5,7 @@
 #include <QDesktopWidget>
 #include <QDebug>
 #include <QHBoxLayout>
+#include "profiles.h"
 
 #pragma execution_character_set("utf-8")
 #define         LABEL_SIZE          250
@@ -40,7 +41,7 @@ void InfoRollingWidget::slotRecvHqRtDataList(const HqRtDataList &list)
 {
     if(list.size() == 0) return;
     foreach (HqRtData data, list) {
-        mRollDataMap[formatCode(data.mCode)] = data;
+        mRollDataMap[data.mCode] = data;
     }
 }
 
@@ -132,7 +133,7 @@ void InfoRollingWidget::slotRemoveIndex(const QStringList &codes)
 {
     if(mIndexThread) mIndexThread->removeCodes(codes);
     foreach (QString code, codes) {
-        mRollDataMap.remove(formatCode(code));
+        mRollDataMap.remove(PROFILES_INSTANCE->formatCode(code));
     }
 }
 
@@ -140,38 +141,8 @@ void InfoRollingWidget::slotRemoveShare(const QStringList &codes)
 {
     if(mShareThread) mShareThread->removeCodes(codes);
     foreach (QString code, codes) {
-        mRollDataMap.remove(formatCode(code));
+        mRollDataMap.remove(PROFILES_INSTANCE->formatCode(code));
     }
 }
 
-bool InfoRollingWidget::isNumber(const QString &code)
-{
-    QRegExp reg("^[-\\+]?[\\d]*$");
-    return reg.exactMatch(code);
-}
 
-QString InfoRollingWidget::formatCode(const QString &code)
-{
-    //港股
-    if(code.contains("rt_hk"))
-    {
-        int index = code.indexOf("hk");
-        return code.mid(index);
-    } else if((code.size() == 5 && isNumber(code)) || code.compare("HSI", Qt::CaseInsensitive) == 0)
-    {
-        return "hk" + code;
-    }
-    //A股
-    if(code.size() == 6 && isNumber(code))
-    {
-        if(code.left(1).toInt() >= 5) return "sh" + code;
-        return "sz" + code;
-    } else if(code.contains("sh") || code.contains("sz"))
-    {
-        int index = code.indexOf("sh");
-        if(index < 0) index = code.indexOf("sz");
-        return code.mid(index);
-    }
-    //期货
-    return code;
-}

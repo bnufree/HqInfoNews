@@ -12,8 +12,7 @@ public:
     void  moveToBottom();
     QString getHtmlRichText(const HqRtDataList& list);
 private:
-    QString formatCode(const QString& code);
-    bool    isNumber(const QString& code);
+
 
 protected:
     void  resizeEvent(QResizeEvent* e);
