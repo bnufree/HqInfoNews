@@ -1,7 +1,7 @@
 ﻿#ifndef HQREALTIMETHREAD_H
 #define HQREALTIMETHREAD_H
 
-#include <QThread>
+#include "datathread.h"
 #include <QList>
 
 struct HqRtData{
@@ -14,7 +14,7 @@ struct HqRtData{
 
 typedef QList<HqRtData>     HqRtDataList;
 
-class HqRealtimeThread : public QThread
+class HqRealtimeThread : public Datathread
 {
     Q_OBJECT
 public:

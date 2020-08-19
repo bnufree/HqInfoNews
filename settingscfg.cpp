@@ -19,6 +19,14 @@ struct SuggestData{
     QString mName;
 };
 
+enum FUNC_TYPE{
+    RT_INFO = 0,
+    RT_HQ_ZXG,
+    RT_HQ_INDEX,
+    RT_NORTH_ZJLX,
+    RT_HQ_NORTH_TOP10,
+};
+
 SettingsCfg::SettingsCfg(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SettingsCfg)
@@ -156,6 +164,30 @@ SettingsCfg::SettingsCfg(QWidget *parent) :
     foreach (HqRtData data, rtList) {
         slotInsertCode(data.mName, data.mCode);
     }
+    //更新功能项目
+    ui->info_rt->setProperty("TYPE", RT_INFO);
+    ui->hq_zxg->setProperty("TYPE", RT_HQ_ZXG);
+    ui->hq_index->setProperty("TYPE", RT_HQ_INDEX);
+    ui->northbound_rt->setProperty("TYPE", RT_NORTH_ZJLX);
+    ui->borthbound_top->setProperty("TYPE", RT_HQ_NORTH_TOP10);
+    connect(ui->info_rt, SIGNAL(toggled(bool)), this, SLOT(slotFuncCheckBoxChanged(bool)));
+    connect(ui->hq_zxg, SIGNAL(toggled(bool)), this, SLOT(slotFuncCheckBoxChanged(bool)));
+    connect(ui->hq_index, SIGNAL(toggled(bool)), this, SLOT(slotFuncCheckBoxChanged(bool)));
+    connect(ui->northbound_rt, SIGNAL(toggled(bool)), this, SLOT(slotFuncCheckBoxChanged(bool)));
+    connect(ui->borthbound_top, SIGNAL(toggled(bool)), this, SLOT(slotFuncCheckBoxChanged(bool)));
+
+
+    bool isInfo = PROFILES_INSTANCE->value("Hq", "Info_Enabled", false).toBool();
+    bool isZxg = PROFILES_INSTANCE->value("Hq", "ZXG_Enabled", false).toBool();
+    bool isIndex = PROFILES_INSTANCE->value("Hq", "Index_Enabled", false).toBool();
+    bool isRtNorth = PROFILES_INSTANCE->value("Hq", "RtNorth_Enabled", false).toBool();
+    bool isRtNorthTop10 = PROFILES_INSTANCE->value("Hq", "RtNorthTop10_Enabled", false).toBool();
+
+    ui->info_rt->setChecked(isInfo);
+    ui->hq_zxg->setChecked(isZxg);
+    ui->hq_index->setChecked(isIndex);
+    ui->northbound_rt->setChecked(isRtNorth);
+    ui->borthbound_top->setChecked(isRtNorthTop10);
 
     QTimer::singleShot(1000, this, [=](){
         emit signalAddIndex(mIndexList);
@@ -283,4 +315,37 @@ void SettingsCfg::slotInsertCode(const QString &name, const QString &code)
     PROFILES_INSTANCE->setValue("Hq", "Zxg", mZxgList);
     qDebug()<<mZxgList;
 }
+
+
+
+void SettingsCfg::slotFuncCheckBoxChanged(bool sts)
+{
+    QCheckBox* box = qobject_cast<QCheckBox*>(sender());
+    if(!box) return;
+    switch (box->property("TYPE").toInt()) {
+    case RT_INFO:
+        PROFILES_INSTANCE->value("Hq", "Info_Enabled", sts);
+        emit signalEnableRtInfo(sts);
+        break;
+    case RT_HQ_INDEX:
+        PROFILES_INSTANCE->value("Hq", "Index_Enabled", sts);
+        emit signalEnableRtIndex(sts);
+        break;
+    case RT_HQ_ZXG:
+        PROFILES_INSTANCE->value("Hq", "ZXG_Enabled", sts);
+        emit signalEnableRtZxg(sts);
+        break;
+    case RT_HQ_NORTH_TOP10:
+        PROFILES_INSTANCE->value("Hq", "RtNorthTop10_Enabled", sts);
+        emit signalEnableRtnorthTop10(sts);
+        break;
+    case RT_NORTH_ZJLX:
+        PROFILES_INSTANCE->value("Hq", "RtNorth_Enabled", sts);
+        emit signalEnableRtnorth(sts);
+        break;
+    default:
+        break;
+    }
+}
+
 

@@ -1,7 +1,7 @@
 ﻿#ifndef KZZINFOTHREAD_H
 #define KZZINFOTHREAD_H
 
-#include <QThread>
+#include "datathread.h"
 struct KZZ{
     QString   mName;
     QString     mSGRI;        //申购日期
@@ -14,7 +14,7 @@ struct KZZ{
     QString   mZGDM;       //正股代码
 };
 
-class KZZInfoThread : public QThread
+class KZZInfoThread : public Datathread
 {
     Q_OBJECT
 public:

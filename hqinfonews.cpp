@@ -9,12 +9,14 @@
 #include "hqrealtimethread.h"
 #include "settingscfg.h"
 #include "inforollingwidget.h"
+#include <QThreadPool>
 
 #pragma execution_character_set("utf-8")
 
 HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     : QTextBrowser(parent)
 {
+
     mRollWidget = roll;
     if(mRollWidget == 0)
     {
@@ -22,7 +24,9 @@ HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
         mRollWidget->moveToBottom();
         mRollWidget->show();
     }
-    mCfg = 0;
+    initCfg();
+    connect(mCfg, SIGNAL(signalEnableRtZxg(bool)), mRollWidget, SLOT(slotEnableShare(bool)));
+    connect(mCfg, SIGNAL(signalEnableRtIndex(bool)), mRollWidget, SLOT(slotEnableIndex(bool)));
 
     mDisplaytimer = new QTimer(this);
     connect(mDisplaytimer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
@@ -35,6 +39,7 @@ HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     this->setStyleSheet("background:black;color:white;font-family:Microsoft Yahei;font-size: 12pt; font-weight:bold;");
 
     HqKuaixun *info_thread = new HqKuaixun(this);
+    connect(mCfg, SIGNAL(signalEnableRtInfo(bool)), info_thread, SLOT(slotSendMsg(bool)));
     connect(info_thread, SIGNAL(signalSendKuaiXun(KuaiXunList)), this, SLOT(slotRecvKuaiXunList(KuaiXunList)));
     info_thread->start();
 
@@ -43,6 +48,7 @@ HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     kzz->start();
 
     HqMutualTop10Thread *top10 = new HqMutualTop10Thread(this);
+    connect(mCfg, SIGNAL(signalEnableRtnorthTop10(bool)), top10, SLOT(slotSendMsg(bool)));
     connect(top10, SIGNAL(signalSendTop10DataList(QDate,QList<ExchangeData>,QList<ExchangeData>)),
             this, SLOT(slotRecvMutualTop10DataList(QDate,QList<ExchangeData>,QList<ExchangeData>)));
     connect(top10, SIGNAL(signalSendNorthMoney(double,double,double)),
@@ -55,8 +61,6 @@ HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     mSysTrayIcon->setIcon(appIcon);
     mSysTrayIcon->setVisible(true);
     connect(mSysTrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(slotSystemTrayOperation(QSystemTrayIcon::ActivationReason)));
-
-    initCfg();
 }
 
 HqInfoNews::~HqInfoNews()

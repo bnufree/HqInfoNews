@@ -3,7 +3,7 @@
 #include <QTextCodec>
 #include "profiles.h"
 
-HqRealtimeThread::HqRealtimeThread(QObject *parent) : QThread(parent)
+HqRealtimeThread::HqRealtimeThread(QObject *parent) : Datathread(parent)
 {
     qRegisterMetaType<HqRtDataList>("const HqRtDataList&");
 }
@@ -172,7 +172,7 @@ void HqRealtimeThread::run()
         }
 #endif
 
-        emit signalSendHqRtDataList(hq_list);
+        if(mSendMsg) emit signalSendHqRtDataList(hq_list);
 
         sleep(3);
     }

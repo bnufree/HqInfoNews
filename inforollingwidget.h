@@ -27,6 +27,8 @@ public slots:
     void        slotAppendShare(const QStringList &codes);
     void        slotRemoveIndex(const QStringList& codes);
     void        slotRemoveShare(const QStringList &codes);
+    void        slotEnableIndex(bool sts) {if(mIndexThread) mIndexThread->slotSendMsg(sts);}
+    void        slotEnableShare(bool sts) {if(mShareThread) mShareThread->slotSendMsg(sts);}
 
 private:
     HqRealtimeThread    *mShareThread;

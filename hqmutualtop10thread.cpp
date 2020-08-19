@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include "hqrealtimethread.h"
 
-HqMutualTop10Thread::HqMutualTop10Thread(QObject *parent) : QThread(parent)
+HqMutualTop10Thread::HqMutualTop10Thread(QObject *parent) : Datathread(parent)
 {
     qRegisterMetaType<QList<ExchangeData> >("const QList<ExchangeData>&");
 }
@@ -107,7 +107,7 @@ void HqMutualTop10Thread::run()
 
 //            qDebug()<<workDate<<now.date()<<dataMap.size()<<codelist.size();
 
-            if(dataMap.size() > 0)
+            if(dataMap.size() > 0 && mSendMsg)
             {
                 HqRtDataList hqlist = HqRealtimeThread::getHqRtDataList(codelist);
                 foreach (HqRtData data, hqlist) {

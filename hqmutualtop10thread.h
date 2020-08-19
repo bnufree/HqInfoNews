@@ -1,7 +1,7 @@
 ﻿#ifndef HQMUTUALTOP10THREAD_H
 #define HQMUTUALTOP10THREAD_H
 
-#include <QThread>
+#include "datathread.h"
 
 struct ExchangeData{
     QString     mCode;
@@ -30,7 +30,7 @@ struct MutualTop10Data{
     QList<ExchangeData> mExchangeDataList;
 };
 
-class HqMutualTop10Thread : public QThread
+class HqMutualTop10Thread : public Datathread
 {
     Q_OBJECT
 public:

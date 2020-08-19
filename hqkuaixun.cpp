@@ -1,4 +1,4 @@
-#include "hqkuaixun.h"
+﻿#include "hqkuaixun.h"
 #include <QDateTime>
 #include "qhttpget.h"
 #include <QJsonArray>
@@ -7,7 +7,7 @@
 #include <QJsonParseError>
 
 HqKuaixun::HqKuaixun(QObject *parent)
-    : QThread(parent)
+    : Datathread(parent)
     , mDisplayWidget(0)
 {
     qRegisterMetaType<KuaiXunList>("const KuaiXunList&");
@@ -17,7 +17,7 @@ HqKuaixun::HqKuaixun(QObject *parent)
 void HqKuaixun::run()
 {
 
-    while (true) {
+    while (1) {
         msleep(1000);
         KuaiXunList list;
 //        parseEastMoney(list);
@@ -32,7 +32,7 @@ void HqKuaixun::run()
 //            }
             if(!mDisplayWidget)
             {
-                emit signalSendKuaiXun(list);
+                if(mSendMsg) emit signalSendKuaiXun(list);
             } else
             {
                 QMetaObject::invokeMethod(mDisplayWidget,

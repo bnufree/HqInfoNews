@@ -23,7 +23,8 @@ private slots:
     void on_lineEdit_textChanged(const QString &arg1);
     void slotItemDoubleClicked(QListWidgetItem*);
     void slotInsertCode(const QString& name, const QString& code);
-    
+    void slotFuncCheckBoxChanged(bool sts);
+
 protected:
     void  closeEvent(QCloseEvent *);
 signals:
@@ -31,6 +32,11 @@ signals:
     void  signalRemoveIndex(const QStringList& list);
     void  signalAddShareCode(const QStringList& list);
     void  signalRemoveShareCode(const QStringList& list);
+    void  signalEnableRtInfo(bool sts);
+    void  signalEnableRtZxg(bool sts);
+    void  signalEnableRtIndex(bool sts);
+    void  signalEnableRtnorth(bool sts);
+    void  signalEnableRtnorthTop10(bool sts);
 
 private:
     Ui::SettingsCfg *ui;

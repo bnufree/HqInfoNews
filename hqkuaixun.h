@@ -1,7 +1,7 @@
 ﻿#ifndef HQKUAIXUN_H
 #define HQKUAIXUN_H
 
-#include <QThread>
+#include "datathread.h"
 
 struct KuaixunData{
     enum Source{
@@ -44,7 +44,7 @@ Q_DECLARE_METATYPE(KuaiXunList)
 
 class QWidget;
 
-class HqKuaixun : public QThread
+class HqKuaixun : public Datathread
 {
     Q_OBJECT
 public:

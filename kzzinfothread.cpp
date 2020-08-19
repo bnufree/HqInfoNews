@@ -5,7 +5,7 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 
-KZZInfoThread::KZZInfoThread(QObject *parent) : QThread(parent)
+KZZInfoThread::KZZInfoThread(QObject *parent) : Datathread(parent)
 {
     qRegisterMetaType<QList<KZZ> >("const QList<KZZ>&");
 }
@@ -82,7 +82,7 @@ void KZZInfoThread::run()
             }
         }
 
-        if(datalist.size() > 0)
+        if(datalist.size() > 0 && mSendMsg)
         {
             emit signalSendKZZDataList(datalist.values());
         }
