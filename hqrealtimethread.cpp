@@ -76,6 +76,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
             double last_close = 0.0;
             if(line_list.size() > 3) last_close = line_list[3].toDouble();
             if(line_list.size() > 4) data.mCur = line_list[4].toDouble();
+            if(data.mCur == 0.0)  data.mCur = line_list[7].toDouble();
             if(last_close > 0.0) data.mChgPercnt = (data.mCur - last_close) / last_close * 100;
             if(line_list.size() > 10) data.mTotal = line_list[10].toDouble() / 100000000.0;
             hq_list.append(data);

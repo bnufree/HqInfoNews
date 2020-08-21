@@ -26,6 +26,8 @@ private:
     void    adjustPostion();
     QString getFormatString(const QStringList& list);
     void    initCfg();
+    QAction*  createAction(const QString& title, const QObject *receiver, const char *member);
+    QString   getDisplayText() const;
 
 private slots:
     void slotRecvKuaiXunList(const KuaiXunList& list);
@@ -34,11 +36,13 @@ private slots:
     void slotTimeOut();
     void slotRecvNorthMoney(double total, double sh, double sz);    
     void slotSystemTrayOperation(QSystemTrayIcon::ActivationReason);
-
+    void slotSetDisplayStatus();
 private:
     QTimer*         mDisplaytimer;
     SettingsCfg*        mCfg;
     InfoRollingWidget   *mRollWidget;
+    QList<QAction*>         mPopMenuActionList;
+    bool                    mForceDisplay;
 };
 
 #endif // HQINFONEWS_H

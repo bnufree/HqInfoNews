@@ -12,6 +12,7 @@
 
 InfoRollingWidget::InfoRollingWidget(QWidget *parent) : QWidget(parent)
 {
+    mForceDisplay = true;
     mLastIndex = 0;
     mShareThread = 0;
     mIndexThread = 0;

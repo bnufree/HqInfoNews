@@ -11,6 +11,7 @@ public:
     explicit InfoRollingWidget(QWidget *parent = nullptr);
     void  moveToBottom();
     QString getHtmlRichText(const HqRtDataList& list);
+    void    setForceDisplay(bool sts) {mForceDisplay = sts; setVisible(sts);}
 private:
 
 
@@ -36,6 +37,7 @@ private:
     QMap<QString, HqRtData>  mRollDataMap;
     QList<QLabel*>          mDisplayLabelList;
     int                     mLastIndex;
+    bool                    mForceDisplay;
 };
 
 #endif // INFOROLLINGWIDGET_H

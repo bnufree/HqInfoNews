@@ -16,7 +16,7 @@
 HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     : QTextBrowser(parent)
 {
-
+    mForceDisplay = true;
     mRollWidget = roll;
     if(mRollWidget == 0)
     {
@@ -170,7 +170,7 @@ void HqInfoNews::appendText(const QStringList &list, int time_out)
         this->append(text);
     }
     adjustPostion();
-    this->show();
+    if(mForceDisplay)   this->show();
     if(mDisplaytimer)
     {
         int cur_timeout = time_out * 1000;
@@ -241,6 +241,35 @@ void HqInfoNews::initCfg()
     }
 }
 
+QAction* HqInfoNews::createAction(const QString &title, const QObject *receiver, const char *member)
+{
+    QAction* act = new QAction(title);
+    connect(act, SIGNAL(triggered(bool)), receiver, member);
+    return act;
+}
+
+void HqInfoNews::slotSetDisplayStatus()
+{
+    mForceDisplay = !mForceDisplay;
+    QAction* act = qobject_cast<QAction*>(sender());
+    if(act) act->setText(getDisplayText());
+    if(mRollWidget) mRollWidget->setForceDisplay(mForceDisplay);
+    if(!mForceDisplay)
+    {
+        this->setVisible(false);
+    }
+}
+
+QString HqInfoNews::getDisplayText() const
+{
+    if(mForceDisplay)
+    {
+        return tr("隐藏");
+    }
+
+    return tr("显示");
+}
+
 void HqInfoNews::slotSystemTrayOperation(QSystemTrayIcon::ActivationReason val)
 {
     qDebug()<<"system icon :"<<val;
@@ -257,26 +286,18 @@ void HqInfoNews::slotSystemTrayOperation(QSystemTrayIcon::ActivationReason val)
         break;
     case QSystemTrayIcon::Trigger:
     {
-        if(mRollWidget) mRollWidget->raise();
+        if(mRollWidget && mForceDisplay) mRollWidget->raise();
     }
     case QSystemTrayIcon::Context:
     {
-//        QMenu *popMenu = new QMenu(this);
-//        QList<QAction*> actlist;
-//        QStringList poplist;
-//        poplist<<QStringLiteral("显示")<<QStringLiteral("退出");
-//        int index = -1;
-//        foreach (QString name, poplist) {
-//            index++;
-//            QAction *act = new QAction(this);
-//            act->setText(name);
-//            act->setData(index);
-////            connect(act, &QAction::triggered, this, &zchxMainWindow::slotSystemTrayMenuClicked);
-//            actlist.append(act);
-//        }
+        QMenu *popMenu = new QMenu(this);
+        if(mPopMenuActionList.size() == 0)
+        {
+            mPopMenuActionList.append(createAction(getDisplayText(), this, SLOT(slotSetDisplayStatus())));
+        }
 
-//        popMenu->addActions(actlist);
-//        popMenu->popup(QCursor::pos());
+        popMenu->addActions(mPopMenuActionList);
+        popMenu->popup(QCursor::pos());
     }
         break;
     default:
