@@ -61,6 +61,14 @@ HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     mSysTrayIcon->setIcon(appIcon);
     mSysTrayIcon->setVisible(true);
     connect(mSysTrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(slotSystemTrayOperation(QSystemTrayIcon::ActivationReason)));
+    QMenu *popMenu = new QMenu(this);
+    if(mPopMenuActionList.size() == 0)
+    {
+        mPopMenuActionList.append(createAction(getDisplayText(), this, SLOT(slotSetDisplayStatus())));
+    }
+
+    popMenu->addActions(mPopMenuActionList);
+    mSysTrayIcon->setContextMenu(popMenu);
 }
 
 HqInfoNews::~HqInfoNews()
@@ -288,16 +296,11 @@ void HqInfoNews::slotSystemTrayOperation(QSystemTrayIcon::ActivationReason val)
     {
         if(mRollWidget && mForceDisplay) mRollWidget->raise();
     }
+        break;
     case QSystemTrayIcon::Context:
     {
-        QMenu *popMenu = new QMenu(this);
-        if(mPopMenuActionList.size() == 0)
-        {
-            mPopMenuActionList.append(createAction(getDisplayText(), this, SLOT(slotSetDisplayStatus())));
-        }
 
-        popMenu->addActions(mPopMenuActionList);
-        popMenu->popup(QCursor::pos());
+
     }
         break;
     default:
