@@ -177,11 +177,11 @@ SettingsCfg::SettingsCfg(QWidget *parent) :
     connect(ui->borthbound_top, SIGNAL(toggled(bool)), this, SLOT(slotFuncCheckBoxChanged(bool)));
 
 
-    bool isInfo = PROFILES_INSTANCE->value("Hq", "Info_Enabled", false).toBool();
-    bool isZxg = PROFILES_INSTANCE->value("Hq", "ZXG_Enabled", false).toBool();
-    bool isIndex = PROFILES_INSTANCE->value("Hq", "Index_Enabled", false).toBool();
-    bool isRtNorth = PROFILES_INSTANCE->value("Hq", "RtNorth_Enabled", false).toBool();
-    bool isRtNorthTop10 = PROFILES_INSTANCE->value("Hq", "RtNorthTop10_Enabled", false).toBool();
+    bool isInfo = PROFILES_INSTANCE->value("Hq", "Info_Enabled", true).toBool();
+    bool isZxg = PROFILES_INSTANCE->value("Hq", "ZXG_Enabled", true).toBool();
+    bool isIndex = PROFILES_INSTANCE->value("Hq", "Index_Enabled", true).toBool();
+    bool isRtNorth = PROFILES_INSTANCE->value("Hq", "RtNorth_Enabled", true).toBool();
+    bool isRtNorthTop10 = PROFILES_INSTANCE->value("Hq", "RtNorthTop10_Enabled", true).toBool();
 
     ui->info_rt->setChecked(isInfo);
     ui->hq_zxg->setChecked(isZxg);

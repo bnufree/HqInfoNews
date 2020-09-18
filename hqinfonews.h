@@ -22,6 +22,7 @@ public:
 
 private:
     QString getRichTextString(double val);
+    QString getHtmlTableTextString(const QDate& date, const QList<ExchangeData>& north, const QList<ExchangeData>& south);
     void    appendText(const QStringList& list, int time_out = 10);
     void    adjustPostion();
     QString getFormatString(const QStringList& list);

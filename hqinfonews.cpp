@@ -16,6 +16,7 @@
 HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     : QTextBrowser(parent)
 {
+//    this->setAttribute(Qt::WA_TranslucentBackground, true);
     mForceDisplay = true;
     mRollWidget = roll;
     if(mRollWidget == 0)
@@ -65,6 +66,7 @@ HqInfoNews::HqInfoNews(InfoRollingWidget* roll, QWidget *parent)
     if(mPopMenuActionList.size() == 0)
     {
         mPopMenuActionList.append(createAction(getDisplayText(), this, SLOT(slotSetDisplayStatus())));
+        mPopMenuActionList.append(createAction(QString::fromUtf8("退出"), QApplication::instance(), SLOT(quit())));
     }
 
     popMenu->addActions(mPopMenuActionList);
@@ -90,10 +92,46 @@ QString HqInfoNews::getRichTextString(double val)
     return res;
 }
 
+QString HqInfoNews::getHtmlTableTextString(const QDate &date, const QList<ExchangeData> &north, const QList<ExchangeData> &south)
+{
+    int total_width = width();
+    QString result;
+    result.append("<html></head><body>");
+    result.append(QString("<p>%1</p>").arg(date.toString("yyyy-MM-dd") + " " + QString::fromUtf8("沪深港通交易数据更新")));
+    result.append(QString("<style>.td{width:%1;}</style>").arg(total_width/4));
+    result.append(QString("<table border=\"0\", width = %1>").arg(total_width));
+    QList<ExchangeData> total = north;
+    total.append(south);
+    result.append(QString("<tr><td>     </td><td >%1</td><td >%2</td><td >%3</td><td >%4</td></tr>")
+                  .arg(QString::fromUtf8("名称"))
+                  .arg(QString::fromUtf8("现价"))
+                  .arg(QString::fromUtf8("涨跌"))
+                  .arg(QString::fromUtf8("净买")));
+    int i = 0;
+    foreach (ExchangeData data, total) {
+        double net = data.mNet/100000000.0;
+        i++;
+        result.append("<tr>");
+        result.append(QString("<td  style=\"color:#ffffff\">%1</td>").arg(i));
+        result.append(QString("<td  style=\"color:#ffffff\">%1</td>").arg(data.mName));
+        QString colrStr = data.mChgPercnt > 0.001 ? "#ff0000" : data.mChgPercnt < -0.001 ? "#00ff00" : "#ffffff";
+        result.append(QString("<td  style=\"color:%1\">%2</td>").arg(colrStr).arg(data.mCur, 0, 'f', 2));
+        result.append(QString("<td  style=\"color:%1\">%2</td>").arg(colrStr).arg(data.mChgPercnt, 0, 'f', 2));
+        colrStr = data.mNet > 0.001 ? "#ff0000" : data.mNet < -0.001 ? "#00ff00" : "#ffffff";
+        result.append(QString("<td  style=\"color:%1\">%2</td>").arg(colrStr).arg(net, 0, 'f', 2));
+        result.append("</tr>");
+    }
+
+    result.append("</table>");
+    result.append("</body></html>");
+    return result;
+}
+
 void HqInfoNews::slotRecvMutualTop10DataList(const QDate& date, const QList<ExchangeData>& north, const QList<ExchangeData>& south)
 {
     clear();
     QStringList totalContent;
+#if 0
     totalContent.append(date.toString("yyyy-MM-dd") + " " + QString::fromUtf8("沪深港通交易数据更新"));
     totalContent.append(QString::fromUtf8("北向方面："));
 
@@ -104,7 +142,6 @@ void HqInfoNews::slotRecvMutualTop10DataList(const QDate& date, const QList<Exch
 //        if(mRtThread) mRtThread->appendCodes(QStringList()<<data.mCode);
     }
     totalContent.append(lines.join(" ,"));
-#if 1
     lines.clear();
     totalContent.append(QString::fromUtf8("南向方面："));
     foreach (ExchangeData data, south) {
@@ -112,6 +149,8 @@ void HqInfoNews::slotRecvMutualTop10DataList(const QDate& date, const QList<Exch
         lines.append(QString("%1(%2,%3,%4)").arg(data.mName).arg(data.mCur, 0, 'f', 2).arg(getRichTextString(data.mChgPercnt)).arg(getRichTextString(net)));
     }
     totalContent.append(lines.join(" ,"));
+#else
+    totalContent.append(getHtmlTableTextString(date, north, south));
 #endif
     appendText(totalContent, 20);
 }
@@ -123,6 +162,7 @@ void HqInfoNews::slotRecvNorthMoney(double total, double sh, double sz)
     totalContent.append(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + " " + QString::fromUtf8("沪深港通实时资金流更新"));
     totalContent.append(QString::fromUtf8("北向方面：%1亿， 其中上海%2亿，深圳%3亿").arg(getRichTextString(total / 10000.0)).arg(getRichTextString(sh/10000.0)).arg(getRichTextString(sz/10000.0)));
 #if 1
+    qDebug()<<totalContent;
     appendText(totalContent);
 #else
     if(mRollWidget) mRollWidget->slotAppendText(totalContent.last());
@@ -178,7 +218,7 @@ void HqInfoNews::appendText(const QStringList &list, int time_out)
         this->append(text);
     }
     adjustPostion();
-    if(mForceDisplay)   this->show();
+    this->show();
     if(mDisplaytimer)
     {
         int cur_timeout = time_out * 1000;
@@ -264,7 +304,7 @@ void HqInfoNews::slotSetDisplayStatus()
     if(mRollWidget) mRollWidget->setForceDisplay(mForceDisplay);
     if(!mForceDisplay)
     {
-        this->setVisible(false);
+//        this->setVisible(false);
     }
 }
 

@@ -24,6 +24,7 @@ void HqMutualTop10Thread::getRtNorthMoneyInfo()
     double hk2sz = obj.value("hk2sz").toObject().value("netBuyAmt").toDouble();
     double total = hk2sh + hk2sz;
 
+    qDebug()<<"now north money:"<<total<<hk2sh<<hk2sz;
     emit signalSendNorthMoney(total, hk2sh, hk2sz);
 }
 

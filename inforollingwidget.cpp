@@ -17,6 +17,7 @@ InfoRollingWidget::InfoRollingWidget(QWidget *parent) : QWidget(parent)
     mShareThread = 0;
     mIndexThread = 0;
     this->setWindowFlags(windowFlags() |Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+    this->setAttribute(Qt::WA_TranslucentBackground, true);
     QTimer *timer = new QTimer(this);
     timer->setInterval(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));

@@ -55,6 +55,18 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         {
             HqRtData data;
             data.mCode = code;
+            //注意港股的特殊情况，有可能没有英文名称
+            int eng_index = -1;
+            QRegExp num("[A-Z ]{2,}");
+            foreach (QString line, line_list) {
+                eng_index++;
+                if(num.exactMatch(line))
+                {
+                    break;
+                }
+            }
+            if(eng_index != 1) line_list.insert(1, "ENGLISH");
+
             if(line_list.size() > 2) data.mName = line_list[2];
             if(line_list.size() > 7) data.mCur = line_list[7].toDouble();
             if(line_list.size() > 9) data.mChgPercnt = line_list[9].toDouble();
@@ -63,7 +75,7 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
                 data.mTotal = line_list[12].toDouble() / 100000000.0;
                 if(code == "rt_hkHSI")
                 {
-                    data.mTotal *= 1000;
+                    data.mTotal *= 1000;                    
                 }
             }
             hq_list.append(data);
@@ -71,12 +83,17 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
         } else if(code.left(2) == "sh" || code.left(2) == "sz")
         {
             HqRtData data;
-            data.mCode = code;
+            data.mCode = code;            
             if(line_list.size() > 1) data.mName = line_list[1];
             double last_close = 0.0;
             if(line_list.size() > 3) last_close = line_list[3].toDouble();
             if(line_list.size() > 4) data.mCur = line_list[4].toDouble();
-            if(data.mCur == 0.0)  data.mCur = line_list[7].toDouble();
+            //检查是否是竞价时段
+            QString now = QDateTime::currentDateTime().time().toString("hhmmss");
+            if(now >= "091500" && now <="092500")
+            {
+                data.mCur = line_list[7].toDouble();
+            }
             if(last_close > 0.0) data.mChgPercnt = (data.mCur - last_close) / last_close * 100;
             if(line_list.size() > 10) data.mTotal = line_list[10].toDouble() / 100000000.0;
             hq_list.append(data);
