@@ -56,8 +56,9 @@ HqRtDataList HqRealtimeThread::getHqRtDataList(const QStringList &codelist)
             HqRtData data;
             data.mCode = code;
             //注意港股的特殊情况，有可能没有英文名称
+
             int eng_index = -1;
-            QRegExp num("[A-Z ]{2,}");
+            QRegExp num("[A-Z\- ]{2,}");
             foreach (QString line, line_list) {
                 eng_index++;
                 if(num.exactMatch(line))
@@ -119,6 +120,7 @@ void HqRealtimeThread::run()
     while (1) {
         if(mCodesList.size() == 0) {sleep(1); continue;}
         HqRtDataList hq_list = HqRealtimeThread::getHqRtDataList(mCodesList);
+        qDebug()<<mCodesList.size()<<hq_list.size();
 #if 0
         QString url = "http://hq.sinajs.cn/list=";
         foreach (QString code, mCodesList) {

@@ -235,7 +235,7 @@ void SettingsCfg::on_lineEdit_textChanged(const QString &arg1)
         mSuggestWidget->hide();
         return;
     }
-    QString url = QString("http://suggest3.sinajs.cn/suggest/type=11,31,22&key=%1&name=").arg(arg1);
+    QString url = QString("http://suggest3.sinajs.cn/suggest/type=11,31,22,81&key=%1&name=").arg(arg1);
     QString result = QString::fromUtf8(QHttpGet::getContentOfURL(url));
     result = result.mid(result.indexOf("\""));
     if(result.size() == 0) return;

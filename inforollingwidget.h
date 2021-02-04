@@ -3,6 +3,7 @@
 
 #include <QLabel>
 #include "hqrealtimethread.h"
+#include <QMap>
 
 class InfoRollingWidget : public QWidget
 {

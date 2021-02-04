@@ -172,6 +172,7 @@ QString Profiles::formatCode(const QString &wkcode)
         if(code.size() == 6)
         {
             if(code.left(1).toInt() >= 5) return "sh" + code;
+            if(code.left(2).toInt() == 11) return "sh" + code;
             return "sz" + code;
         }
     }

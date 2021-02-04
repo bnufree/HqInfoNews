@@ -291,7 +291,7 @@ void HqInfoNews::initCfg()
 
 QAction* HqInfoNews::createAction(const QString &title, const QObject *receiver, const char *member)
 {
-    QAction* act = new QAction(title);
+    QAction* act = new QAction(title, this);
     connect(act, SIGNAL(triggered(bool)), receiver, member);
     return act;
 }

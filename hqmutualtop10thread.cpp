@@ -57,10 +57,10 @@ void HqMutualTop10Thread::run()
         if(top10_update % 3 == 0)
         {
             top10_update = 0;
-            if(now.date() != workDate)
+            dataMap.clear();
+            codelist.clear();
+            while(1)
             {
-                codelist.clear();
-                dataMap.clear();
                 QByteArray recv = QHttpGet::getContentOfURL(QString("http://sc.hkex.com.hk/TuniS/www.hkex.com.hk/chi/csm/DailyStat/data_tab_daily_%1c.js?_=%2").arg(now.toString("yyyyMMdd"))
                                                             .arg(QDateTime::currentDateTime().toMSecsSinceEpoch()));
                 int index = recv.indexOf("[");
@@ -103,7 +103,8 @@ void HqMutualTop10Thread::run()
                         codelist.append(data.mCode);
                     }
                 }
-                if(dataMap.size() > 0)   workDate = now.date();
+                if(dataMap.size()  > 0) break;
+                now = now.addDays(-1);
             }
 
 //            qDebug()<<workDate<<now.date()<<dataMap.size()<<codelist.size();
